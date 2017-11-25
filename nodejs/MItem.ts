@@ -10,7 +10,8 @@ export default class MItem {
   readonly price2;
   readonly price3;
   readonly price4;
-  readonly cache: any = {};
+  readonly priceCache: any = {};
+  readonly powerCache: any = {};
 
   constructor({
     item_id,
@@ -35,6 +36,9 @@ export default class MItem {
   }
 
   getPrice (count) {
+    if (this.priceCache[count]) {
+      return this.priceCache[count]
+    }
     // price(x):=(cx+1)*d^(ax+b)
     const a = this.price1
     const b = this.price2
@@ -45,12 +49,14 @@ export default class MItem {
     const s = bigint(c*x + 1)
     const u = bigint(a*x + b)
     const t = d.pow(u)
+    const result = s.mul(t)
+    this.priceCache[count] = result
     return s.mul(t)
   }
 
   getPower (count) {
-    if (this.cache[count]) {
-      return this.cache[count]
+    if (this.powerCache[count]) {
+      return this.powerCache[count]
     }
     // power(x):=(cx+1)*d^(ax+b)
     const a = this.power1
@@ -63,7 +69,7 @@ export default class MItem {
     const u = bigint(a*x + b)
     const t = d.pow(u)
     const result = s.mul(t)
-    this.cache[count] = result
+    this.powerCache[count] = result
     return result
     // return s.mul(t)
   }

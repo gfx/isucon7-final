@@ -414,7 +414,8 @@ export default class Game {
           if (totalPower.cmp(BI0) == 0) {
             itemOnSale[itemId] = time
           } else {
-            const t = itemPrice[itemId].mul(BI1000).sub(prevToatalMilliIsu).div(totalPower).toNumber()
+            const diff: number = itemPrice[itemId].mul(BI1000).sub(prevToatalMilliIsu).toNumber()
+            const t = Math.ceil(diff / totalPower.toNumber())
             if (prevTime + t < time) {
               itemOnSale[itemId] = prevTime + t
             } else {

@@ -7,11 +7,12 @@ import * as websockify from 'koa-websocket'
 import * as serve from 'koa-static'
 import * as mysql from 'mysql2/promise'
 import  Game from './Game'
+import * as mmh3 from 'murmurhash3'
 
 const app = websockify(new Koa())
 const pool = mysql.createPool({
   connectionLimit: 20,
-  host: process.env.ISU_DB_HOST || '127.0.0.1',
+  host: '127.0.0.1',
   port: process.env.ISU_DB_PORT || '3306',
   user: process.env.ISU_DB_USER || 'root',
   password: process.env.ISU_DB_PASSWORD || '',
@@ -19,17 +20,35 @@ const pool = mysql.createPool({
   charset: 'utf8mb4',
 })
 
+const servers = process.env.NODE_ENV === 'production' ? 
+  ['app0021', 'app0022', 'app0023', 'app0024'] : ['127.0.0.1']
+
 const getInitializeHandler = async (ctx) => {
-  await pool.query('TRUNCATE TABLE adding')
-  await pool.query('TRUNCATE TABLE buying')
-  await pool.query('TRUNCATE TABLE room_time')
+  for (let srv of servers) {
+    const initDB = mysql.createPool({
+      connectionLimit: 20,
+      host: srv,
+      port: process.env.ISU_DB_PORT || '3306',
+      user: process.env.ISU_DB_USER || 'root',
+      password: process.env.ISU_DB_PASSWORD || '',
+      database: 'isudb',
+      charset: 'utf8mb4',
+    })
+    await initDB.query('TRUNCATE TABLE adding')
+    await initDB.query('TRUNCATE TABLE buying')
+    await initDB.query('TRUNCATE TABLE room_time')
+  }
   ctx.status = 204
 }
 
 const getRoomHandler = async (ctx, roomName) => {
   roomName = typeof roomName !== 'string' ? '' : roomName
+
+  const roomHash = mmh3.murmur32Sync(roomName);
+  const roomServer = servers[roomHash % servers.length];
+
   ctx.body = {
-    host: '',
+    host: `${roomServer}:5000`,
     path: `/ws/${roomName}`
   }
 }

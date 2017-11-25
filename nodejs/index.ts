@@ -22,6 +22,8 @@ const pool = mysql.createPool({
 
 const servers = process.env.NODE_ENV === 'production' ? 
   ['app0021', 'app0022', 'app0023', 'app0024'] : ['127.0.0.1']
+const endpoints = process.env.NODE_ENV === 'production' ?
+  ['app0021.isu7f.k0y.org:5000', 'app0022.isu7f.k0y.org:5000', 'app0023.isu7f.k0y.org:5000', 'app0024.isu7f.k0y.org:5000'] : ['']
 
 const getInitializeHandler = async (ctx) => {
   for (let srv of servers) {
@@ -45,10 +47,10 @@ const getRoomHandler = async (ctx, roomName) => {
   roomName = typeof roomName !== 'string' ? '' : roomName
 
   const roomHash = mmh3.murmur32Sync(roomName);
-  const roomServer = servers[roomHash % servers.length];
+  const roomServer = endpoints[roomHash % endpoints.length];
 
   ctx.body = {
-    host: `${roomServer}.isu7f.k0y.org:5000`,
+    host: `${roomServer}`,
     path: `/ws/${roomName}`
   }
 }

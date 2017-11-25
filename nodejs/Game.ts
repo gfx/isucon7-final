@@ -1,7 +1,6 @@
 import * as bigint from 'bigint'
 import * as LRU from 'lru-cache'
 import MItem from './MItem'
-import Exponential from './Exponential'
 
 const BI0 = bigint('0');
 const BI1000 = bigint('1000');
@@ -473,19 +472,19 @@ export default class Game {
     }
   }
 
-  big2exp(n) {
+  big2exp(n): Array<number> {
     const s = n.toString()
     if (s.length <= 15) {
-      return new Exponential({
-        mantissa: n.toNumber(),
-        exponent: 0,
-      })
+      return [
+        n.toNumber(), // mantissa
+        0, // exponent
+      ]
     }
 
     const t = parseInt(s.slice(0, 15), 10)
-    return new Exponential({
-      mantissa: t,
-      exponent: s.length - 15,
-    })
+    return [
+      t, // mantissa
+      s.length - 15, // exponent
+    ];
   }
 }

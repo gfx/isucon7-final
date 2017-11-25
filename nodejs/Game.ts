@@ -1,5 +1,6 @@
 import * as bigint from 'bigint'
 import * as LRU from 'lru-cache'
+import * as _ from 'lodash'
 import MItem from './MItem'
 
 const BI0 = bigint('0');
@@ -378,7 +379,7 @@ export default class Game {
     times.push(currentTime + 1000)
 
     let prevTime: number = currentTime
-    times.sort((a, b) => a - b).forEach((time) => {
+    _.uniq(times).sort((a, b) => a - b).forEach((time) => {
       // 1000以上は計算する必要なし
       if (time > currentTime + 1000) {
         return

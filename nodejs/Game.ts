@@ -471,7 +471,7 @@ export default class Game {
       ]
     }
 
-    const t = parseInt(s.slice(0, 15), 10)
+    const t = Number(s.slice(0, 15))
     return [
       t, // mantissa
       s.length - 15, // exponent

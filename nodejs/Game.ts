@@ -182,17 +182,31 @@ export default class Game {
   }
 
   async getStatus() {
-    const currentTime = await this.updateRoomTimeSimple(0)
-    const [addings] = await this.pool.query('SELECT time, isu FROM adding WHERE room_name = ?', [this.roomName])
-    const [buyings] = await this.pool.query('SELECT item_id, ordinal, time FROM buying WHERE room_name = ?', [this.roomName])
+    const connection = await this.pool.getConnection()
+    await connection.beginTransaction()
 
-    const status = this.calcStatus(currentTime, this.mItems, addings, buyings)
+    try {
+      const currentTime = await this.updateRoomTime(connection, 0)
+      // const mItems = {}
+      // const [items] = await connection.query('SELECT * FROM m_item')
+      const [addings] = await connection.query('SELECT time, isu FROM adding WHERE room_name = ?', [this.roomName])
+      const [buyings] = await connection.query('SELECT item_id, ordinal, time FROM buying WHERE room_name = ?', [this.roomName])
+      await connection.commit()
+      connection.release()
 
-    // calcStatusに時間がかかる可能性があるので タイムスタンプを取得し直す
-    const latestTime = Date.now();
-    status.time = latestTime
+      const status = this.calcStatus(currentTime, this.mItems, addings, buyings)
 
-    return status
+      // calcStatusに時間がかかる可能性があるので タイムスタンプを取得し直す
+      const latestTime = Date.now();
+      status.time = latestTime
+
+      return status
+
+    } catch (e) {
+      await connection.rollback()
+      connection.release()
+      throw e
+    }
   }
 
   async addIsu(reqIsu, reqTime) {
@@ -201,7 +215,7 @@ export default class Game {
       await connection.beginTransaction()
 
       try {
-        await this.updateRoomTime(connection,reqTime)
+        await this.updateRoomTime(connection, reqTime)
         await connection.query('INSERT INTO adding(room_name, time, isu) VALUES (?, ?, \'0\') ON DUPLICATE KEY UPDATE isu=isu', [this.roomName, reqTime])
 
         const [[{ isu }]] = await connection.query('SELECT isu FROM adding WHERE room_name = ? AND time = ? FOR UPDATE', [this.roomName, reqTime])
@@ -214,7 +228,6 @@ export default class Game {
 
       } catch (e) {
         await connection.rollback()
-        console.error(e)
         connection.release()
         throw e
       }
@@ -230,7 +243,7 @@ export default class Game {
       await connection.beginTransaction()
 
       try {
-        await this.updateRoomTime(connection,reqTime)
+        await this.updateRoomTime(connection, reqTime)
         const [[{ countBuying }]] = await connection.query('SELECT COUNT(*) as countBuying FROM buying WHERE room_name = ? AND item_id = ?', [this.roomName, itemId])
         if (parseInt(countBuying, 10) != countBought) {
           throw new Error(`roomName=${this.roomName}, itemId=${itemId} countBought+1=${countBought + 1} is already bought`)
@@ -272,7 +285,6 @@ export default class Game {
       } catch (e) {
         await connection.rollback()
         connection.release()
-        console.error(e)
         throw e
       }
     } catch (e) {
@@ -281,32 +293,6 @@ export default class Game {
     }
   }
 
-
-  async insertRoomTime() {
-    await this.pool.query(
-      'INSERT IGNORE INTO room_time(room_name,time) VALUES (?,0)',
-      [this.roomName]
-    )
-  }
-
-  async updateRoomTimeSimple(reqTime) {
-    const currentTime = Date.now();
-    if (reqTime !== 0) {
-      if (reqTime < currentTime) {
-        throw new Error('reqTime is past')
-      }
-    }
-
-    await this.pool.query(
-      'UPDATE room_time SET time = ? WHERE room_name = ? and ? > time ',
-      [currentTime, this.roomName, currentTime]
-    )
-    return currentTime
-  }
-
-  async lockRoomTime(connection) {
-    await connection.query('SELECT time FROM room_time WHERE room_name = ? FOR UPDATE', [this.roomName])
-  }
 
   // 部屋のロックを取りタイムスタンプを更新する
   //

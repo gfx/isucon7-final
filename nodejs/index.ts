@@ -9,6 +9,8 @@ import * as mysql from 'mysql2/promise'
 import  Game from './Game'
 import * as mmh3 from 'murmurhash3'
 
+import 'source-map-support'
+
 console.log('app starting');
 
 const app = websockify(new Koa())

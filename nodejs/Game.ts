@@ -189,6 +189,7 @@ export default class Game {
       await connection.beginTransaction()
 
       try {
+        await this.lockRoomTime(connection)
         await connection.query('INSERT INTO adding(room_name, time, isu) VALUES (?, ?, \'0\') ON DUPLICATE KEY UPDATE isu=isu', [this.roomName, reqTime])
 
         const [[{ isu }]] = await connection.query('SELECT isu FROM adding WHERE room_name = ? AND time = ? FOR UPDATE', [this.roomName, reqTime])
@@ -218,6 +219,7 @@ export default class Game {
       await connection.beginTransaction()
 
       try {
+        await this.lockRoomTime(connection)
         const [[{ countBuying }]] = await connection.query('SELECT COUNT(*) as countBuying FROM buying WHERE room_name = ? AND item_id = ?', [this.roomName, itemId])
         if (parseInt(countBuying, 10) != countBought) {
           throw new Error(`roomName=${this.roomName}, itemId=${itemId} countBought+1=${countBought + 1} is already bought`)
@@ -290,6 +292,9 @@ export default class Game {
     return currentTime
   }
 
+  async lockRoomTime(connection) {
+    await connection.query('SELECT time FROM room_time WHERE room_name = ? FOR UPDATE', [this.roomName])
+  }
 
   // 部屋のロックを取りタイムスタンプを更新する
   //

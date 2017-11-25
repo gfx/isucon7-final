@@ -183,17 +183,30 @@ export default class Game {
 
   async getStatus() {
     const connection = await this.pool.getConnection()
-    const currentTime = Date.now();
-    const [addings] = await connection.query('SELECT time, isu FROM adding WHERE room_name = ?', [this.roomName])
-    const [buyings] = await connection.query('SELECT item_id, ordinal, time FROM buying WHERE room_name = ?', [this.roomName])
-    connection.release()
-    const status = this.calcStatus(currentTime, this.mItems, addings, buyings)
+    await connection.beginTransaction()
 
-    // calcStatusに時間がかかる可能性があるので タイムスタンプを取得し直す
-    const latestTime = Date.now();
-    status.time = latestTime
+    try {
+      const currentTime = await this.updateRoomTime(connection, 0)
+      // const mItems = {}
+      // const [items] = await connection.query('SELECT * FROM m_item')
+      await connection.commit()
+      connection.release()
 
-    return status
+      const [addings] = await connection.query('SELECT time, isu FROM adding WHERE room_name = ?', [this.roomName])
+      const [buyings] = await connection.query('SELECT item_id, ordinal, time FROM buying WHERE room_name = ?', [this.roomName])
+      const status = this.calcStatus(currentTime, this.mItems, addings, buyings)
+
+      // calcStatusに時間がかかる可能性があるので タイムスタンプを取得し直す
+      const latestTime = Date.now();
+      status.time = latestTime
+
+      return status
+
+    } catch (e) {
+      await connection.rollback()
+      connection.release()
+      throw e
+    }
   }
 
   async addIsu(reqIsu, reqTime) {

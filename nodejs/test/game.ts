@@ -218,6 +218,8 @@ describe('Game', () => {
     })
     assert.equal(item.getPower(1).cmp(bigint('81')), 0)
     assert.equal(item.getPrice(1).cmp(bigint('2048')), 0)
+
+    assert.equal(JSON.stringify(item), '{"item_id":1,"power1":1,"power2":2,"power3":2,"power4":3,"price1":5,"price2":4,"price3":3,"price4":2}');
   })
 
   it('TestConv', () => {

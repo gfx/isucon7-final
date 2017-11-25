@@ -415,7 +415,7 @@ export default class Game {
             itemOnSale[itemId] = time
           } else {
             const t = itemPrice[itemId].mul(BI1000).sub(prevToatalMilliIsu).div(totalPower).toNumber()
-            if (t < time) {
+            if (prevTime + t < time) {
               itemOnSale[itemId] = prevTime + t
             } else {
               itemOnSale[itemId] = time

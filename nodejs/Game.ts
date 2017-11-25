@@ -2,6 +2,9 @@ import * as bigint from 'bigint'
 import MItem from './MItem'
 import Exponential from './Exponential'
 
+const BI0 = bigint('0');
+const BI1000 = bigint('1000');
+
 export default class Game {
   readonly pool: any;
   readonly roomName: string;
@@ -231,10 +234,10 @@ export default class Game {
           throw new Error(`roomName=${this.roomName}, itemId=${itemId} countBought+1=${countBought+1} is already bought`)
         }
 
-        let totalMilliIsu = bigint('0')
+        let totalMilliIsu = BI0;
         const [addings] = await connection.query('SELECT isu FROM adding WHERE room_name = ? AND time <= ?', [this.roomName, reqTime])
         for (let { isu } of addings) {
-          totalMilliIsu = totalMilliIsu.add(bigint(isu).mul(bigint('1000')))
+          totalMilliIsu = totalMilliIsu.add(bigint(isu).mul(BI1000))
         }
 
         const [buyings] = await connection.query('SELECT item_id, ordinal, time FROM buying WHERE room_name = ?', [this.roomName])
@@ -243,10 +246,10 @@ export default class Game {
           // let [[mItem]] = await connection.query('SELECT * FROM m_item WHERE item_id = ?', [b.item_id])
           // let item = new MItem(mItem)
           let item = this.mItems[b.item_id]
-          let cost = item.getPrice(parseInt(b.ordinal, 10)).mul(bigint('1000'))
+          let cost = item.getPrice(parseInt(b.ordinal, 10)).mul(BI1000)
           totalMilliIsu = totalMilliIsu.sub(cost)
           if (parseInt(b.time, 10) <= reqTime) {
-            let gain = item.getPower(parseInt(b.ordinal, 10)).mul(bigint('' + (reqTime - parseInt(b.time, 10))))
+            let gain = item.getPower(parseInt(b.ordinal, 10)).mul(bigint(reqTime - parseInt(b.time, 10)))
             totalMilliIsu = totalMilliIsu.add(gain)
           }
         }
@@ -254,7 +257,7 @@ export default class Game {
         // const [[mItem]] = await connection.query('SELECT * FROM m_item WHERE item_id = ?', [itemId])
         // const item = new MItem(mItem)
         const item = this.mItems[itemId]
-        const need = item.getPrice(countBought + 1).mul(bigint('1000'))
+        const need = item.getPrice(countBought + 1).mul(BI1000)
         if (totalMilliIsu.cmp(need) < 0) {
           throw new Error('not enough')
         }
@@ -300,8 +303,8 @@ export default class Game {
 
   calcStatus (currentTime, mItems, addings, buyings) {
     // 1ミリ秒に生産できる椅子の単位をミリ椅子とする
-    let totalMilliIsu = bigint('0')
-    let totalPower    = bigint('0')
+    let totalMilliIsu = BI0
+    let totalPower    = BI0
 
     const itemPower    = {} // ItemID => Power
     const itemPrice    = {} // ItemID => Price
@@ -316,14 +319,14 @@ export default class Game {
     const buyingAt = {} // Time => currentTime より先の Buying
 
     for (let itemId in mItems) {
-      itemPower[itemId] = bigint('0')
+      itemPower[itemId] = BI0
       itemBuilding[itemId] = []
     }
 
     for (let a of addings) {
       // adding は adding.time に isu を増加させる
       if (a.time <= currentTime) {
-        totalMilliIsu = totalMilliIsu.add(bigint(a.isu).mul(bigint('1000')))
+        totalMilliIsu = totalMilliIsu.add(bigint(a.isu).mul(BI1000))
       } else {
         addingAt[a.time] = a
       }
@@ -333,7 +336,7 @@ export default class Game {
       // buying は 即座に isu を消費し buying.time からアイテムの効果を発揮する
       itemBought[b.item_id] = itemBought[b.item_id] ? itemBought[b.item_id] + 1 : 1
       const m = mItems[b.item_id]
-      totalMilliIsu = totalMilliIsu.sub(m.getPrice(b.ordinal).mul(bigint('1000')))
+      totalMilliIsu = totalMilliIsu.sub(m.getPrice(b.ordinal).mul(BI1000))
 
       if (b.time <= currentTime) {
         itemBuilt[b.item_id] = itemBuilt[b.item_id] ? itemBuilt[b.item_id] + 1 : 1
@@ -353,7 +356,7 @@ export default class Game {
       itemBuilt0[m.itemId] = itemBuilt[m.itemId]
       const price = m.getPrice((itemBought[m.itemId] || 0) + 1)
       itemPrice[m.itemId] = price
-      if (0 <= totalMilliIsu.cmp(price.mul(bigint('1000')))) {
+      if (0 <= totalMilliIsu.cmp(price.mul(BI1000))) {
         itemOnSale[m.itemId] = 0 // 0 は 時刻 currentTime で購入可能であることを表す
       }
     }
@@ -375,7 +378,7 @@ export default class Game {
       if (addingAt[t]) {
         let a = addingAt[t]
         updated = true
-        totalMilliIsu = totalMilliIsu.add(bigint(a.isu).mul(bigint('1000')))
+        totalMilliIsu = totalMilliIsu.add(bigint(a.isu).mul(BI1000))
       }
 
       // 時刻 t で発生する buying を計算する
@@ -412,7 +415,7 @@ export default class Game {
         if (typeof itemOnSale[itemId] !== 'undefined') {
           continue;
         }
-        if (0 <= totalMilliIsu.cmp(itemPrice[itemId].mul(bigint('1000')))) {
+        if (0 <= totalMilliIsu.cmp(itemPrice[itemId].mul(BI1000))) {
           itemOnSale[itemId] = t
         }
       }

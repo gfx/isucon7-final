@@ -10,6 +10,7 @@ export default class MItem {
   readonly price2;
   readonly price3;
   readonly price4;
+  readonly cache: any = {};
 
   constructor({
     item_id,
@@ -48,6 +49,9 @@ export default class MItem {
   }
 
   getPower (count) {
+    if (this.cache[count]) {
+      return this.cache[count]
+    }
     // power(x):=(cx+1)*d^(ax+b)
     const a = this.power1
     const b = this.power2
@@ -58,7 +62,10 @@ export default class MItem {
     const s = bigint(c*x + 1)
     const u = bigint(a*x + b)
     const t = d.pow(u)
-    return s.mul(t)
+    const result = s.mul(t)
+    this.cache[count] = result
+    return result
+    // return s.mul(t)
   }
 
   toJSON () {

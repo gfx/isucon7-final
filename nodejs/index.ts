@@ -15,6 +15,10 @@ const numCPUs = os.cpus().length;
 
 import 'source-map-support'
 
+process.on('unhandledRejection', (reason, p) => {
+  console.error('Unhandled Rejection at:', p, 'reason:', reason);
+});
+
 if (cluster.isMaster) {
   console.log(`Master ${process.pid} is running`);
 
@@ -70,7 +74,7 @@ if (cluster.isMaster) {
 
     const game = new Game(roomName, pool)
     game.insertRoomTime()
-     
+
     ctx.body = {
       host: `${roomServer}`,
       path: `/ws/${roomName}`

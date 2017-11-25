@@ -48,7 +48,7 @@ const getRoomHandler = async (ctx, roomName) => {
   const roomServer = servers[roomHash % servers.length];
 
   ctx.body = {
-    host: `${roomServer}:5000`,
+    host: `${roomServer}.isu7f.k0y.org:5000`,
     path: `/ws/${roomName}`
   }
 }

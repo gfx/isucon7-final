@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "ts-node index.ts",
     "test": "mocha --require ts-node/register --require source-map-support/register test/*.ts"
   },
   "author": "",

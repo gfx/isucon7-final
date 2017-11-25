@@ -42,10 +42,6 @@ if (cluster.isMaster) {
     database: 'isudb',
     charset: 'utf8mb4',
   });
-  pool.getConnection(function (err) {
-    pool.query('SET SESSION TRANSACTION ISOLATION LEVEL read committed;');
-  });
-
 
   const servers = process.env.NODE_ENV === 'production' ?
     ['app0021', 'app0022', 'app0023', 'app0024'] : ['127.0.0.1']
@@ -75,9 +71,6 @@ if (cluster.isMaster) {
 
     const roomHash = mmh3.murmur32Sync(roomName);
     const roomServer = endpoints[roomHash % endpoints.length];
-
-    const game = new Game(roomName, pool)
-    game.insertRoomTime()
 
     ctx.body = {
       host: `${roomServer}`,

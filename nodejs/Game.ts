@@ -1,8 +1,11 @@
-const bigint = require('bigint')
-const MItem = require('./MItem')
-const Exponential = require('./Exponential')
+import * as bigint from 'bigint'
+import MItem from './MItem'
+import Exponential from './Exponential'
 
-class Game {
+export default class Game {
+  readonly pool: any;
+  readonly roomName: string;
+
   constructor(roomName, pool) {
     this.roomName = roomName
     this.pool = pool
@@ -324,5 +327,3 @@ class Game {
     })
   }
 }
-
-module.exports = Game

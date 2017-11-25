@@ -1,4 +1,7 @@
-class Exponential {
+export default class Exponential {
+  readonly mantissa;
+  readonly exponent;
+
   constructor({ mantissa, exponent }) {
     this.mantissa = mantissa
     this.exponent = exponent
@@ -11,5 +14,3 @@ class Exponential {
     ]
   }
 }
-
-module.exports = Exponential

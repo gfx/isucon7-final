@@ -335,6 +335,8 @@ export default class Game {
     const addingAt = {} // Time => currentTime より先の Adding
     const buyingAt = {} // Time => currentTime より先の Buying
 
+    const eventTimes = new Set<number>(); // adding or buying times
+
     for (let itemId in mItems) {
       itemPower[itemId] = BI0
       itemBuilding[itemId] = []
@@ -346,6 +348,7 @@ export default class Game {
         totalMilliIsu = totalMilliIsu.add(bigint(a.isu).mul(BI1000))
       } else {
         addingAt[a.time] = a
+        eventTimes.add(a.time);
       }
     }
 
@@ -364,6 +367,7 @@ export default class Game {
       } else {
         buyingAt[b.time] = buyingAt[b.time] || []
         buyingAt[b.time].push(b)
+        eventTimes.add(b.time);
       }
     }
 
@@ -387,13 +391,10 @@ export default class Game {
     ]
 
     // イベントが起きる時間だけ時系列に列挙する
-    const addingTimes: Array<number> = Object.keys(addingAt).map((s) => Number(s));
-    const buyingTimes: Array<number> = Object.keys(buyingAt).map((s) => Number(s));
-    const times: Array<number> = buyingTimes.concat(addingTimes)
-    times.push(currentTime + 1000)
+    eventTimes.add(currentTime + 1000)
 
     let prevTime: number = currentTime
-    _.uniq(times).sort((a, b) => a - b).forEach((time) => {
+    Array.from(eventTimes).sort((a, b) => a - b).forEach((time) => {
       // 1000以上は計算する必要なし
       if (time > currentTime + 1000) {
         return

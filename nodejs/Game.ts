@@ -5,6 +5,10 @@ import MItem from './MItem'
 const BI_CACHE = {};
 
 function bigint(n: number | string) {
+  if (n > 1000) {
+    return _bigint(n);
+  }
+
   const x = BI_CACHE[n]
   if (x != null) {
     return x;

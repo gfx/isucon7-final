@@ -278,9 +278,6 @@ export default class Game {
     }
   }
 
-  async insertRoomTime() {
-    await this.pool.query('INSERT IGNORE INTO room_time(room_name, time) VALUES (?, 0)', [this.roomName])
-  }
 
   // 部屋のロックを取りタイムスタンプを更新する
   //

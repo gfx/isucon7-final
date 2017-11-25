@@ -1,6 +1,16 @@
-import * as bigint from 'bigint'
+import * as _bigint from 'bigint'
 import * as LRU from 'lru-cache'
 import MItem from './MItem'
+
+const BI_CACHE = {};
+
+function bigint(n: number | string) {
+  const x = BI_CACHE[n]
+  if (x != null) {
+    return x;
+  }
+  return BI_CACHE[n] = _bigint(n);
+}
 
 const BI0 = bigint('0');
 const BI1000 = bigint('1000');

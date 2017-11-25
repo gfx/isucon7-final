@@ -111,7 +111,7 @@ const wsGameHandler = async (ctx, roomName) => {
     }
 
     if (![ctx.websocket.constructor.CLOSING, ctx.websocket.constructor.CLOSED].includes(ctx.websocket.readyState)) {
-      tid = setTimeout(loop, 5000)
+      tid = setTimeout(loop, 750)
     }
   }
   const game = new Game(roomName, pool)

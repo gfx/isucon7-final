@@ -1,8 +1,8 @@
-const assert = require('assert')
-const bigint = require('bigint')
-const Game = require('../Game')
-const Exponential = require('../Exponential')
-const MItem = require('../MItem')
+import * as assert from 'assert'
+import * as bigint from 'bigint'
+import Game from '../Game'
+import Exponential from '../Exponential'
+import MItem from '../MItem'
 
 describe('Game', () => {
   it('TestStatusEmpty', () => {

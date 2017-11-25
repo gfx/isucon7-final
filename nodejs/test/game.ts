@@ -117,8 +117,7 @@ describe('Game', () => {
     assert.equal(1, s.items.length)
 
     assert.equal(1, s.schedule[0].time)
-    // assert.deepEqual({ item_id: 1, time: 1000 }, s.on_sale[0])
-    assert.deepEqual({ item_id: 1, time: 1001 }, s.on_sale[0])
+    assert.deepEqual({ item_id: 1, time: 1000 }, s.on_sale[0])
 
     assert.equal(1, s.items[0].count_bought)
     assert.deepEqual(new Exponential({ mantissa: 1, exponent: 0 }).toJSON(), s.items[0].power)

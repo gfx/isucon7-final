@@ -1,6 +1,5 @@
 import * as bigint from 'bigint'
 import * as LRU from 'lru-cache'
-import * as _ from 'lodash'
 import MItem from './MItem'
 
 const BI0 = bigint('0');
@@ -372,42 +371,23 @@ export default class Game {
       }
     ]
 
-    // イベントが起きる時間だけ時系列に列挙する
-    const addingTimes: Array<number> = Object.keys(addingAt).map((s) => Number(s));
-    const buyingTimes: Array<number> = Object.keys(buyingAt).map((s) => Number(s));
-    const times: Array<number> = buyingTimes.concat(addingTimes)
-    times.push(currentTime + 1000)
+    // currentTime から 1000 ミリ秒先までシミュレーションする
+    for (let t = currentTime + 1; t <= currentTime + 1000; t++) {
+      totalMilliIsu = totalMilliIsu.add(totalPower)
+      let updated = false
 
-    let prevTime: number = currentTime
-    _.uniq(times).sort((a, b) => a - b).forEach((time) => {
-      // 1000以上は計算する必要なし
-      if (time > currentTime + 1000) {
-        return
-      }
-      if (addingAt[time]) {
-        let a = addingAt[time]
+      // 時刻 t で発生する adding を計算する
+      if (addingAt[t]) {
+        let a = addingAt[t]
+        updated = true
         totalMilliIsu = totalMilliIsu.add(bigint(a.isu).mul(BI1000))
       }
-      // 直前の状態は保持しておく
-      const prevToatalMilliIsu = totalMilliIsu
-      totalMilliIsu = totalMilliIsu.add(totalPower.mul(Number(time) - prevTime))
-      // 購入可能になっていたらその時刻を逆算
-      for (let itemId in mItems) {
-        if (typeof itemOnSale[itemId] !== 'undefined') {
-          continue;
-        }
-        if (0 <= totalMilliIsu.cmp(itemPrice[itemId].mul(BI1000))) {
-          if (totalPower.cmp(BI0) == 0) {
-            itemOnSale[itemId] = time
-          } else {
-            const t = itemPrice[itemId].mul(BI1000).sub(prevToatalMilliIsu).div(totalPower).toNumber() + 1
-            itemOnSale[itemId] = prevTime + t
-          }
-        }
-      }
-      if (buyingAt[time]) {
+
+      // 時刻 t で発生する buying を計算する
+      if (buyingAt[t]) {
+        updated = true
         const updatedID = {}
-        for (let b of buyingAt[time]) {
+        for (let b of buyingAt[t]) {
           const m = mItems[b.item_id]
           updatedID[b.item_id] = true
           itemBuilt[b.item_id] = itemBuilt[b.item_id] ? itemBuilt[b.item_id] + 1 : 1
@@ -417,21 +397,31 @@ export default class Game {
         }
         for (let id in updatedID) {
           itemBuilding[id].push({
-            time: time,
+            time: t,
             count_built: itemBuilt[id],
             power: this.big2exp(itemPower[id]),
           })
         }
       }
-      if (time != currentTime + 1000) {
+
+      if (updated) {
         schedule.push({
-          time: time,
+          time: t,
           milli_isu: this.big2exp(totalMilliIsu),
           total_power: this.big2exp(totalPower),
         })
       }
-      prevTime = Number(time)
-    });
+
+      // 時刻 t で購入可能になったアイテムを記録する
+      for (let itemId in mItems) {
+        if (typeof itemOnSale[itemId] !== 'undefined') {
+          continue;
+        }
+        if (0 <= totalMilliIsu.cmp(itemPrice[itemId].mul(BI1000))) {
+          itemOnSale[itemId] = t
+        }
+      }
+    }
 
     const gsAdding = []
     for (let a of Object.values(addingAt)) {

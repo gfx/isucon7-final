@@ -19,8 +19,8 @@ describe('Game', () => {
     assert.equal(0, s.on_sale.length)
 
     assert.equal(0, s.schedule[0].time)
-    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }), s.schedule[0].milli_isu)
-    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }), s.schedule[0].total_power)
+    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }).toJSON(), s.schedule[0].milli_isu)
+    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }).toJSON(), s.schedule[0].total_power)
   })
 
   it('TestStatusAdd', () => {
@@ -39,28 +39,28 @@ describe('Game', () => {
     assert.equal(s.schedule.length, 4)
 
     assert.equal(0, s.schedule[0].time)
-    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }), s.schedule[0].milli_isu)
-    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }), s.schedule[0].total_power)
+    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }).toJSON(), s.schedule[0].milli_isu)
+    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }).toJSON(), s.schedule[0].total_power)
 
     assert.equal(100, s.schedule[1].time)
-    assert.deepEqual(new Exponential({ mantissa: 1000, exponent: 0 }), s.schedule[1].milli_isu)
-    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }), s.schedule[1].total_power)
+    assert.deepEqual(new Exponential({ mantissa: 1000, exponent: 0 }).toJSON(), s.schedule[1].milli_isu)
+    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }).toJSON(), s.schedule[1].total_power)
 
     assert.equal(200, s.schedule[2].time)
-    assert.deepEqual(new Exponential({ mantissa: 3000, exponent: 0 }), s.schedule[2].milli_isu)
-    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }), s.schedule[2].total_power)
+    assert.deepEqual(new Exponential({ mantissa: 3000, exponent: 0 }).toJSON(), s.schedule[2].milli_isu)
+    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }).toJSON(), s.schedule[2].total_power)
 
     assert.equal(300, s.schedule[3].time)
-    assert.deepEqual(new Exponential({ mantissa: 123456789012345, exponent: 7 }), s.schedule[3].milli_isu)
-    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }), s.schedule[3].total_power)
+    assert.deepEqual(new Exponential({ mantissa: 123456789012345, exponent: 7 }).toJSON(), s.schedule[3].milli_isu)
+    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }).toJSON(), s.schedule[3].total_power)
 
     s = game.calcStatus(500, mItems, addings, buyings)
     assert.equal(0, s.adding.length)
     assert.equal(1, s.schedule.length)
 
     assert.equal(500, s.schedule[0].time)
-    assert.deepEqual(new Exponential({ mantissa: 123456789012345, exponent: 7 }), s.schedule[0].milli_isu)
-    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }), s.schedule[0].total_power)
+    assert.deepEqual(new Exponential({ mantissa: 123456789012345, exponent: 7 }).toJSON(), s.schedule[0].milli_isu)
+    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }).toJSON(), s.schedule[0].total_power)
   })
 
   it('TestStatusBuySingle', () => {
@@ -91,12 +91,12 @@ describe('Game', () => {
     assert.equal(1, s.items.length)
 
     assert.equal(0, s.schedule[0].time)
-    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }), s.schedule[0].milli_isu)
-    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }), s.schedule[0].total_power)
+    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }).toJSON(), s.schedule[0].milli_isu)
+    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }).toJSON(), s.schedule[0].total_power)
 
     assert.equal(100, s.schedule[1].time)
-    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }), s.schedule[1].milli_isu)
-    assert.deepEqual(new Exponential({ mantissa: 10,exponent:  0 }), s.schedule[1].total_power)
+    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }).toJSON(), s.schedule[1].milli_isu)
+    assert.deepEqual(new Exponential({ mantissa: 10,exponent:  0 }).toJSON(), s.schedule[1].total_power)
   })
 
   it('TestOnSale', () => {
@@ -120,9 +120,9 @@ describe('Game', () => {
     assert.deepEqual({ item_id: 1, time: 1000 }, s.on_sale[0])
 
     assert.equal(1, s.items[0].count_bought)
-    assert.deepEqual(new Exponential({ mantissa: 1, exponent: 0 }), s.items[0].power)
+    assert.deepEqual(new Exponential({ mantissa: 1, exponent: 0 }).toJSON(), s.items[0].power)
     assert.equal(1, s.items[0].count_built)
-    assert.deepEqual(new Exponential({ mantissa: 1, exponent: 0 }), s.items[0].next_price)
+    assert.deepEqual(new Exponential({ mantissa: 1, exponent: 0 }).toJSON(), s.items[0].next_price)
   })
 
   it('TestStatusBuy', () => {

@@ -399,7 +399,7 @@ export default class Game {
           if (totalPower.cmp(BI0) == 0) {
             itemOnSale[itemId] = time
           } else {
-            const t = itemPrice[itemId].mul(BI1000).sub(prevToatalMilliIsu).div(totalPower).toNumber()
+            const t = itemPrice[itemId].mul(BI1000).sub(prevToatalMilliIsu).div(totalPower).toNumber() + 1
             itemOnSale[itemId] = prevTime + t
           }
         }

@@ -1,12 +1,12 @@
-const path = require('path')
-const http = require('http')
-const bigint = require('bigint')
-const Koa = require('koa')
-const router = require('koa-route')
-const websockify = require('koa-websocket')
-const serve = require('koa-static')
-const mysql = require('mysql2/promise')
-const Game = require('./Game')
+import * as path from 'path'
+import * as http from 'http'
+import * as bigint from 'bigint'
+import * as Koa from 'koa'
+import * as router from 'koa-route'
+import * as websockify from 'koa-websocket'
+import * as serve from 'koa-static'
+import * as mysql from 'mysql2/promise'
+import  Game from './Game'
 
 const app = websockify(new Koa())
 const pool = mysql.createPool({

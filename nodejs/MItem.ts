@@ -1,6 +1,16 @@
-const bigint = require('bigint')
+import * as bigint from 'bigint'
 
-class MItem {
+export default class MItem {
+  readonly itemId;
+  readonly power1;
+  readonly power2;
+  readonly power3;
+  readonly power4;
+  readonly price1;
+  readonly price2;
+  readonly price3;
+  readonly price4;
+
   constructor({
     item_id,
     power1,
@@ -65,5 +75,3 @@ class MItem {
     }
   }
 }
-
-module.exports = MItem

@@ -331,6 +331,7 @@ export default class Game {
 
     const itemPower = {} // ItemID => Power
     const itemPrice = {} // ItemID => Price
+    const itemPriceX1000 = {}
     const itemOnSale = {} // ItemID => OnSale
     const itemBuilt = {} // ItemID => BuiltCount
     const itemBought = {} // ItemID => CountBought
@@ -382,8 +383,10 @@ export default class Game {
       itemPower0[m.itemId] = this.big2exp(itemPower[m.itemId])
       itemBuilt0[m.itemId] = itemBuilt[m.itemId]
       const price = m.getPrice((itemBought[m.itemId] || 0) + 1)
+      const priceX1000 = price.mul(BI1000);
       itemPrice[m.itemId] = price
-      if (0 <= totalMilliIsu.cmp(price.mul(BI1000))) {
+      itemPriceX1000[m.itemId] = priceX1000
+      if (0 <= totalMilliIsu.cmp(priceX1000)) {
         itemOnSale[m.itemId] = 0 // 0 は 時刻 currentTime で購入可能であることを表す
       }
     }
@@ -417,11 +420,11 @@ export default class Game {
         if (typeof itemOnSale[itemId] !== 'undefined') {
           continue;
         }
-        if (0 <= totalMilliIsu.cmp(itemPrice[itemId].mul(BI1000))) {
+        if (0 <= totalMilliIsu.cmp(itemPriceX1000[itemId])) {
           if (totalPower.cmp(BI0) == 0) {
             itemOnSale[itemId] = time
           } else {
-            const diff = itemPrice[itemId].mul(BI1000).sub(prevToatalMilliIsu)
+            const diff = itemPriceX1000[itemId].sub(prevToatalMilliIsu)
             const div = diff.div(totalPower)
             const mod = diff.mod(totalPower)
             const t = mod.eq(BI0) ? div.toNumber() : div.add(1).toNumber()

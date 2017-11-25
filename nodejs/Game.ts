@@ -397,6 +397,10 @@ export default class Game {
       // 直前の状態は保持しておく
       const prevToatalMilliIsu = totalMilliIsu
       totalMilliIsu = totalMilliIsu.add(totalPower.mul(Number(time) - prevTime))
+      if (addingAt[time]) {
+        let a = addingAt[time]
+        totalMilliIsu = totalMilliIsu.add(bigint(a.isu).mul(BI1000))
+      }
       // 購入可能になっていたらその時刻を逆算
       for (let itemId in mItems) {
         if (typeof itemOnSale[itemId] !== 'undefined') {
@@ -407,13 +411,13 @@ export default class Game {
             itemOnSale[itemId] = time
           } else {
             const t = itemPrice[itemId].mul(BI1000).sub(prevToatalMilliIsu).div(totalPower).toNumber()
-            itemOnSale[itemId] = prevTime + t
+            if (t < time) {
+              itemOnSale[itemId] = prevTime + t
+            } else {
+              itemOnSale[itemId] = time
+            }
           }
         }
-      }
-      if (addingAt[time]) {
-        let a = addingAt[time]
-        totalMilliIsu = totalMilliIsu.add(bigint(a.isu).mul(BI1000))
       }
       if (buyingAt[time]) {
         const updatedID = {}

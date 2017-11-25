@@ -1,6 +1,6 @@
 #!/bin/bash
 set -xe
-cd /home/isucon/webapp/node
+cd /home/isucon/webapp/nodejs
 git pull
 npm install
 npm test

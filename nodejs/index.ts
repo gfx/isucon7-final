@@ -9,6 +9,8 @@ import * as mysql from 'mysql2/promise'
 import  Game from './Game'
 import * as mmh3 from 'murmurhash3'
 
+console.log('app starting');
+
 const app = websockify(new Koa())
 const pool = mysql.createPool({
   connectionLimit: 20,
@@ -20,7 +22,9 @@ const pool = mysql.createPool({
   charset: 'utf8mb4',
 })
 
-const servers = process.env.NODE_ENV === 'production' ? 
+console.log('connected')
+
+const servers = process.env.NODE_ENV === 'production' ?
   ['app0021', 'app0022', 'app0023', 'app0024'] : ['127.0.0.1']
 const endpoints = process.env.NODE_ENV === 'production' ?
   ['app0021.isu7f.k0y.org:5000', 'app0022.isu7f.k0y.org:5000', 'app0023.isu7f.k0y.org:5000', 'app0024.isu7f.k0y.org:5000'] : ['']
@@ -128,3 +132,5 @@ app.ws
 
 // const server = http.createServer(app.callback()).listen(5000)
 app.listen(5000)
+
+console.log('ready')

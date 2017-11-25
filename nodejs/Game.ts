@@ -1,172 +1,179 @@
 import * as bigint from 'bigint'
+import * as LRU from 'lru-cache'
 import MItem from './MItem'
 import Exponential from './Exponential'
 
 const BI0 = bigint('0');
 const BI1000 = bigint('1000');
 
+const ITEMS = [
+  {
+    item_id: 1,
+    power1: 0,
+    power2: 1,
+    power3: 0,
+    power4: 1,
+    price1: 0,
+    price2: 1,
+    price3: 1,
+    price4: 1,
+  },
+  {
+    item_id: 2,
+    power1: 0,
+    power2: 1,
+    power3: 1,
+    power4: 1,
+    price1: 0,
+    price2: 1,
+    price3: 2,
+    price4: 1,
+  },
+  {
+    item_id: 3,
+    power1: 1,
+    power2: 10,
+    power3: 0,
+    power4: 2,
+    price1: 1,
+    price2: 3,
+    price3: 1,
+    price4: 2,
+  },
+  {
+    item_id: 4,
+    power1: 1,
+    power2: 24,
+    power3: 1,
+    power4: 2,
+    price1: 1,
+    price2: 10,
+    price3: 0,
+    price4: 3,
+  },
+  {
+    item_id: 5,
+    power1: 1,
+    power2: 25,
+    power3: 100,
+    power4: 3,
+    price1: 2,
+    price2: 20,
+    price3: 20,
+    price4: 2,
+  },
+  {
+    item_id: 6,
+    power1: 1,
+    power2: 30,
+    power3: 147,
+    power4: 13,
+    price1: 1,
+    price2: 22,
+    price3: 69,
+    price4: 17,
+  },
+  {
+    item_id: 7,
+    power1: 5,
+    power2: 80,
+    power3: 128,
+    power4: 6,
+    price1: 6,
+    price2: 61,
+    price3: 200,
+    price4: 5,
+  },
+  {
+    item_id: 8,
+    power1: 20,
+    power2: 340,
+    power3: 180,
+    power4: 3,
+    price1: 9,
+    price2: 105,
+    price3: 134,
+    price4: 14,
+  },
+  {
+    item_id: 9,
+    power1: 55,
+    power2: 520,
+    power3: 335,
+    power4: 5,
+    price1: 48,
+    price2: 243,
+    price3: 600,
+    price4: 7,
+  },
+  {
+    item_id: 10,
+    power1: 157,
+    power2: 1071,
+    power3: 1700,
+    power4: 12,
+    price1: 157,
+    price2: 625,
+    price3: 1000,
+    price4: 13,
+  },
+  {
+    item_id: 11,
+    power1: 2000,
+    power2: 7500,
+    power3: 2600,
+    power4: 3,
+    price1: 2001,
+    price2: 5430,
+    price3: 1000,
+    price4: 3,
+  },
+  {
+    item_id: 12,
+    power1: 1000,
+    power2: 9000,
+    power3: 0,
+    power4: 17,
+    price1: 963,
+    price2: 7689,
+    price3: 1,
+    price4: 19,
+  },
+  {
+    item_id: 13,
+    power1: 11000,
+    power2: 11000,
+    power3: 11000,
+    power4: 23,
+    price1: 10000,
+    price2: 2,
+    price3: 2,
+    price4: 29,
+  },
+]
+
 export default class Game {
   readonly pool: any;
   readonly roomName: string;
-  readonly mItems: any;
+  readonly mItems: Array<MItem>;
+
+  readonly cache = LRU({
+    max: 1000000,
+    length: function (n, key) { return n * 2 + key.length },
+    maxAge: 1000
+  })
 
   constructor(roomName, pool) {
     this.roomName = roomName
     this.pool = pool
-    this.mItems = {
+    this.mItems = [];
 
-    }
-    const items = [
-      {
-        item_id: 1,
-        power1: 0,
-        power2: 1,
-        power3: 0,
-        power4: 1,
-        price1: 0,
-        price2: 1,
-        price3: 1,
-        price4: 1,
-      },
-      {
-        item_id: 2,
-        power1: 0,
-        power2: 1,
-        power3: 1,
-        power4: 1,
-        price1: 0,
-        price2: 1,
-        price3: 2,
-        price4: 1,
-      },
-      {
-        item_id: 3,
-        power1: 1,
-        power2: 10,
-        power3: 0,
-        power4: 2,
-        price1: 1,
-        price2: 3,
-        price3: 1,
-        price4: 2,
-      },
-      {
-        item_id: 4,
-        power1: 1,
-        power2: 24,
-        power3: 1,
-        power4: 2,
-        price1: 1,
-        price2: 10,
-        price3: 0,
-        price4: 3,
-      },
-      {
-        item_id: 5,
-        power1: 1,
-        power2: 25,
-        power3: 100,
-        power4: 3,
-        price1: 2,
-        price2: 20,
-        price3: 20,
-        price4: 2,
-      },
-      {
-        item_id: 6,
-        power1: 1,
-        power2: 30,
-        power3: 147,
-        power4: 13,
-        price1: 1,
-        price2: 22,
-        price3: 69,
-        price4: 17,
-      },
-      {
-        item_id: 7,
-        power1: 5,
-        power2: 80,
-        power3: 128,
-        power4: 6,
-        price1: 6,
-        price2: 61,
-        price3: 200,
-        price4: 5,
-      },
-      {
-        item_id: 8,
-        power1: 20,
-        power2: 340,
-        power3: 180,
-        power4: 3,
-        price1: 9,
-        price2: 105,
-        price3: 134,
-        price4: 14,
-      },
-      {
-        item_id: 9,
-        power1: 55,
-        power2: 520,
-        power3: 335,
-        power4: 5,
-        price1: 48,
-        price2: 243,
-        price3: 600,
-        price4: 7,
-      },
-      {
-        item_id: 10,
-        power1: 157,
-        power2: 1071,
-        power3: 1700,
-        power4: 12,
-        price1: 157,
-        price2: 625,
-        price3: 1000,
-        price4: 13,
-      },
-      {
-        item_id: 11,
-        power1: 2000,
-        power2: 7500,
-        power3: 2600,
-        power4: 3,
-        price1: 2001,
-        price2: 5430,
-        price3: 1000,
-        price4: 3,
-      },
-      {
-        item_id: 12,
-        power1: 1000,
-        power2: 9000,
-        power3: 0,
-        power4: 17,
-        price1: 963,
-        price2: 7689,
-        price3: 1,
-        price4: 19,
-      },
-      {
-        item_id: 13,
-        power1: 11000,
-        power2: 11000,
-        power3: 11000,
-        power4: 23,
-        price1: 10000,
-        price2: 2,
-        price3: 2,
-        price4: 29,
-      },
-    ]
-    for (let item of items) {
+    for (let item of ITEMS) {
       this.mItems[item.item_id] = new MItem(item)
     }
   }
 
-  async getStatus () {
+  async getStatus() {
     const connection = await this.pool.getConnection()
     await connection.beginTransaction()
 
@@ -194,7 +201,7 @@ export default class Game {
     }
   }
 
-  async addIsu (reqIsu, reqTime) {
+  async addIsu(reqIsu, reqTime) {
     try {
       const connection = await this.pool.getConnection()
       await connection.beginTransaction()
@@ -222,7 +229,7 @@ export default class Game {
     }
   }
 
-  async buyItem (itemId, countBought, reqTime) {
+  async buyItem(itemId, countBought, reqTime) {
     try {
       const connection = await this.pool.getConnection()
       await connection.beginTransaction()
@@ -231,7 +238,7 @@ export default class Game {
         await this.updateRoomTime(connection, reqTime)
         const [[{ countBuying }]] = await connection.query('SELECT COUNT(*) as countBuying FROM buying WHERE room_name = ? AND item_id = ?', [this.roomName, itemId])
         if (parseInt(countBuying, 10) != countBought) {
-          throw new Error(`roomName=${this.roomName}, itemId=${itemId} countBought+1=${countBought+1} is already bought`)
+          throw new Error(`roomName=${this.roomName}, itemId=${itemId} countBought+1=${countBought + 1} is already bought`)
         }
 
         let totalMilliIsu = BI0;
@@ -284,7 +291,7 @@ export default class Game {
   // トランザクション開始後この関数を呼ぶ前にクエリを投げると、
   // そのトランザクション中の通常のSELECTクエリが返す結果がロック取得前の
   // 状態になることに注意 (keyword: MVCC, repeatable read).
-  async updateRoomTime (connection, reqTime) {
+  async updateRoomTime(connection, reqTime) {
     // See page 13 and 17 in https://www.slideshare.net/ichirin2501/insert-51938787
     await connection.query('INSERT INTO room_time(room_name, time) VALUES (?, 0) ON DUPLICATE KEY UPDATE time = time', [this.roomName])
     const [[{ time }]] = await connection.query('SELECT time FROM room_time WHERE room_name = ? FOR UPDATE', [this.roomName])
@@ -302,19 +309,25 @@ export default class Game {
     return currentTime
   }
 
-  calcStatus (currentTime, mItems, addings, buyings) {
+  calcStatus(currentTime, mItems, addings, buyings) {
+    const cachedResult = this.cache.get(JSON.stringify([(currentTime / 100) | 0, mItems, addings, buyings]))
+    if (cachedResult) {
+      return cachedResult;
+    }
+
+    const t0 = process.env.NODE_ENV !== 'production' ? Date.now() : null;
     // 1ミリ秒に生産できる椅子の単位をミリ椅子とする
     let totalMilliIsu = BI0
-    let totalPower    = BI0
+    let totalPower = BI0
 
-    const itemPower    = {} // ItemID => Power
-    const itemPrice    = {} // ItemID => Price
-    const itemOnSale   = {} // ItemID => OnSale
-    const itemBuilt    = {} // ItemID => BuiltCount
-    const itemBought   = {} // ItemID => CountBought
+    const itemPower = {} // ItemID => Power
+    const itemPrice = {} // ItemID => Price
+    const itemOnSale = {} // ItemID => OnSale
+    const itemBuilt = {} // ItemID => BuiltCount
+    const itemBought = {} // ItemID => CountBought
     const itemBuilding = {} // ItemID => Buildings
-    const itemPower0   = {} // ItemID => currentTime における Power
-    const itemBuilt0   = {} // ItemID => currentTime における BuiltCount
+    const itemPower0 = {} // ItemID => currentTime における Power
+    const itemBuilt0 = {} // ItemID => currentTime における BuiltCount
 
     const addingAt = {} // Time => currentTime より先の Adding
     const buyingAt = {} // Time => currentTime より先の Buying
@@ -364,8 +377,8 @@ export default class Game {
 
     const schedule = [
       {
-        time:        currentTime,
-        milli_isu:   this.big2exp(totalMilliIsu),
+        time: currentTime,
+        milli_isu: this.big2exp(totalMilliIsu),
         total_power: this.big2exp(totalPower),
       }
     ]
@@ -396,17 +409,17 @@ export default class Game {
         }
         for (let id in updatedID) {
           itemBuilding[id].push({
-            time:        t,
+            time: t,
             count_built: itemBuilt[id],
-            power:       this.big2exp(itemPower[id]),
+            power: this.big2exp(itemPower[id]),
           })
         }
       }
 
       if (updated) {
         schedule.push({
-          time:        t,
-          milli_isu:   this.big2exp(totalMilliIsu),
+          time: t,
+          milli_isu: this.big2exp(totalMilliIsu),
           total_power: this.big2exp(totalPower),
         })
       }
@@ -430,12 +443,12 @@ export default class Game {
     const gsItems = []
     for (let itemId in mItems) {
       gsItems.push({
-        item_id:      parseInt(itemId, 10),
+        item_id: parseInt(itemId, 10),
         count_bought: itemBought[itemId] || 0,
-        count_built:  itemBuilt0[itemId] || 0,
-        next_price:   this.big2exp(itemPrice[itemId]),
-        power:        itemPower0[itemId],
-        building:     itemBuilding[itemId],
+        count_built: itemBuilt0[itemId] || 0,
+        next_price: this.big2exp(itemPrice[itemId]),
+        power: itemPower0[itemId],
+        building: itemBuilding[itemId],
       })
     }
 
@@ -444,22 +457,27 @@ export default class Game {
       let t = itemOnSale[itemId]
       gsOnSale.push({
         item_id: parseInt(itemId, 10),
-        time:    t,
+        time: t,
       })
     }
+    const result = {
+      time: 0,
+      adding: gsAdding,
+      schedule: schedule,
+      items: gsItems,
+      on_sale: gsOnSale,
+    };
+    this.cache.set(JSON.stringify([(currentTime / 100) | 0, mItems, addings, buyings]), result);
 
-    return {
-      time:      0,
-      adding:    gsAdding,
-      schedule:  schedule,
-      items:     gsItems,
-      on_sale:   gsOnSale,
+    if (t0) {
+      console.log('calcStatus', currentTime, Date.now() - t0);
     }
+    return result;
   }
 
-  async getCurrentTime () {
+  async getCurrentTime() {
     try {
-      const [[{currentTime}]] = await this.pool.query('SELECT floor(unix_timestamp(current_timestamp(3))*1000) AS currentTime')
+      const [[{ currentTime }]] = await this.pool.query('SELECT floor(unix_timestamp(current_timestamp(3))*1000) AS currentTime')
       return parseInt(currentTime, 10)
     } catch (e) {
       console.error(e)
@@ -467,7 +485,7 @@ export default class Game {
     }
   }
 
-  big2exp (n) {
+  big2exp(n) {
     const s = n.toString()
     if (s.length <= 15) {
       return new Exponential({

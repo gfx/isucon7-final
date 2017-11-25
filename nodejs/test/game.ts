@@ -222,8 +222,8 @@ describe('Game', () => {
 
   it('TestConv', () => {
     const game = new Game('xxx', null)
-    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }), game.big2exp(bigint("0")))
-    assert.deepEqual(new Exponential({ mantissa: 1234, exponent: 0 }), game.big2exp(bigint("1234")))
-    assert.deepEqual(new Exponential({ mantissa: 111111111111110, exponent: 5 }), game.big2exp(bigint("11111111111111000000")))
+    assert.deepEqual(new Exponential({ mantissa: 0, exponent: 0 }).toJSON(), game.big2exp(bigint("0")))
+    assert.deepEqual(new Exponential({ mantissa: 1234, exponent: 0 }).toJSON(), game.big2exp(bigint("1234")))
+    assert.deepEqual(new Exponential({ mantissa: 111111111111110, exponent: 5 }).toJSON(), game.big2exp(bigint("11111111111111000000")))
   })
 })

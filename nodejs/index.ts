@@ -49,6 +49,9 @@ const getRoomHandler = async (ctx, roomName) => {
   const roomHash = mmh3.murmur32Sync(roomName);
   const roomServer = endpoints[roomHash % endpoints.length];
 
+  const game = new Game(roomName, pool)
+  await game.insertRoomTime()
+
   ctx.body = {
     host: `${roomServer}`,
     path: `/ws/${roomName}`

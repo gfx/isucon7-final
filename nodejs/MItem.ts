@@ -25,14 +25,18 @@ export default class MItem {
     price4,
   }) {
     this.itemId = item_id
+
     this.power1 = power1
     this.power2 = power2
     this.power3 = power3
-    this.power4 = power4
+    this.power4 = bigint(power4)
+    this.power4.toJSON = () => power4;
+
     this.price1 = price1
     this.price2 = price2
     this.price3 = price3
-    this.price4 = price4
+    this.price4 = bigint(price4)
+    this.price4.toJSON = () => price4;
   }
 
   getPrice (count) {
@@ -43,7 +47,7 @@ export default class MItem {
     const a = this.price1
     const b = this.price2
     const c = this.price3
-    const d = bigint(this.price4)
+    const d = this.price4 // bigint
     const x = count
 
     const s = bigint(c*x + 1)
@@ -62,7 +66,7 @@ export default class MItem {
     const a = this.power1
     const b = this.power2
     const c = this.power3
-    const d = bigint(this.power4)
+    const d = this.power4 // bigint
     const x = count
 
     const s = bigint(c*x + 1)

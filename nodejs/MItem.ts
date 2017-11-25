@@ -51,7 +51,7 @@ export default class MItem {
     const t = d.pow(u)
     const result = s.mul(t)
     this.priceCache[count] = result
-    return s.mul(t)
+    return result
   }
 
   getPower (count) {

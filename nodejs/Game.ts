@@ -191,14 +191,12 @@ export default class Game {
   }
 
   async addIsu(reqIsu, reqTime) {
-    await this.updateRoomTimeSimple(reqTime)
-
     try {
       const connection = await this.pool.getConnection()
       await connection.beginTransaction()
 
       try {
-        await this.lockRoomTime(connection)
+        await this.updateRoomTime(connection,reqTime)
         await connection.query('INSERT INTO adding(room_name, time, isu) VALUES (?, ?, \'0\') ON DUPLICATE KEY UPDATE isu=isu', [this.roomName, reqTime])
 
         const [[{ isu }]] = await connection.query('SELECT isu FROM adding WHERE room_name = ? AND time = ? FOR UPDATE', [this.roomName, reqTime])
@@ -211,6 +209,7 @@ export default class Game {
 
       } catch (e) {
         await connection.rollback()
+        console.error(e)
         connection.release()
         throw e
       }
@@ -221,14 +220,12 @@ export default class Game {
   }
 
   async buyItem(itemId, countBought, reqTime) {
-    await this.updateRoomTimeSimple(reqTime)
-
     try {
       const connection = await this.pool.getConnection()
       await connection.beginTransaction()
 
       try {
-        await this.lockRoomTime(connection)
+        await this.updateRoomTime(connection,reqTime)
         const [[{ countBuying }]] = await connection.query('SELECT COUNT(*) as countBuying FROM buying WHERE room_name = ? AND item_id = ?', [this.roomName, itemId])
         if (parseInt(countBuying, 10) != countBought) {
           throw new Error(`roomName=${this.roomName}, itemId=${itemId} countBought+1=${countBought + 1} is already bought`)
@@ -270,6 +267,7 @@ export default class Game {
       } catch (e) {
         await connection.rollback()
         connection.release()
+        console.error(e)
         throw e
       }
     } catch (e) {

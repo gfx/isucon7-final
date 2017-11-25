@@ -461,10 +461,7 @@ export default class Game {
       prevTime = Number(time)
     });
 
-    const gsAdding = []
-    for (let a of Object.values(addingAt)) {
-      gsAdding.push(a)
-    }
+    const gsAdding = Object.values(addingAt);
 
     const gsItems = []
     for (let itemId in mItems) {

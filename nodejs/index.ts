@@ -34,7 +34,7 @@ if (cluster.isMaster) {
 
   const app = websockify(new Koa())
   const pool = mysql.createPool({
-    connectionLimit: 8,
+    connectionLimit: 100,
     host: '127.0.0.1',
     port: process.env.ISU_DB_PORT || '3306',
     user: process.env.ISU_DB_USER || 'root',

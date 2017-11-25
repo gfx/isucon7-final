@@ -189,11 +189,11 @@ export default class Game {
       const currentTime = await this.updateRoomTime(connection, 0)
       // const mItems = {}
       // const [items] = await connection.query('SELECT * FROM m_item')
-      const [addings] = await connection.query('SELECT time, isu FROM adding WHERE room_name = ?', [this.roomName])
-      const [buyings] = await connection.query('SELECT item_id, ordinal, time FROM buying WHERE room_name = ?', [this.roomName])
       await connection.commit()
       connection.release()
 
+      const [addings] = await connection.query('SELECT time, isu FROM adding WHERE room_name = ?', [this.roomName])
+      const [buyings] = await connection.query('SELECT item_id, ordinal, time FROM buying WHERE room_name = ?', [this.roomName])
       const status = this.calcStatus(currentTime, this.mItems, addings, buyings)
 
       // calcStatusに時間がかかる可能性があるので タイムスタンプを取得し直す

@@ -157,12 +157,6 @@ export default class Game {
   readonly roomName: string;
   readonly mItems: Array<MItem>;
 
-  readonly cache = LRU({
-    max: 1000000,
-    length: function (n, key) { return n * 2 + key.length },
-    maxAge: 1000
-  })
-
   constructor(roomName, pool) {
     this.roomName = roomName
     this.pool = pool
@@ -310,11 +304,6 @@ export default class Game {
   }
 
   calcStatus(currentTime, mItems, addings, buyings) {
-    const cachedResult = this.cache.get(JSON.stringify([(currentTime / 100) | 0, mItems, addings, buyings]))
-    if (cachedResult) {
-      return cachedResult;
-    }
-
     const t0 = process.env.NODE_ENV !== 'production' ? Date.now() : null;
     // 1ミリ秒に生産できる椅子の単位をミリ椅子とする
     let totalMilliIsu = BI0
@@ -467,7 +456,6 @@ export default class Game {
       items: gsItems,
       on_sale: gsOnSale,
     };
-    this.cache.set(JSON.stringify([(currentTime / 100) | 0, mItems, addings, buyings]), result);
 
     if (t0) {
       console.log('calcStatus', currentTime, Date.now() - t0);

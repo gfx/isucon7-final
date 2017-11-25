@@ -352,7 +352,7 @@ export default class Game {
     for (let a of addings) {
       // adding は adding.time に isu を増加させる
       if (a.time <= currentTime) {
-        totalMilliIsu = totalMilliIsu.add(bigint(a.isu).mul(BI1000))
+        totalMilliIsu = totalMilliIsu.add(a.isu + "000")
       } else {
         addingAt[a.time] = a
         eventTimes.add(a.time);
@@ -413,7 +413,7 @@ export default class Game {
       totalMilliIsu = totalMilliIsu.add(totalPower.mul(Number(time) - prevTime))
       if (addingAt[time]) {
         let a = addingAt[time]
-        totalMilliIsu = totalMilliIsu.add(bigint(a.isu).mul(BI1000))
+        totalMilliIsu = totalMilliIsu.add(a.isu + "000")
       }
       // 購入可能になっていたらその時刻を逆算
       for (let itemId in mItems) {

@@ -307,7 +307,7 @@ export default class Game {
   // 状態になることに注意 (keyword: MVCC, repeatable read).
   async updateRoomTime(connection, reqTime) {
     // See page 13 and 17 in https://www.slideshare.net/ichirin2501/insert-51938787
-    // await connection.query('INSERT INTO room_time(room_name, time) VALUES (?, 0) ON DUPLICATE KEY UPDATE time = time', [this.roomName])
+    await connection.query('INSERT INTO room_time(room_name, time) VALUES (?, 0) ON DUPLICATE KEY UPDATE time = time', [this.roomName])
     const [[{ time }]] = await connection.query('SELECT time FROM room_time WHERE room_name = ? FOR UPDATE', [this.roomName])
     const currentTime = Date.now();
     if (parseInt(time, 10) > currentTime) {
